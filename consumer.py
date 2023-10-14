@@ -2,10 +2,12 @@ import time
 
 import paho.mqtt.client as mqtt
 import serial
+import serial_generator
 
 from constants import mqtt_broker_host, mqtt_topic, mqtt_broker_port, arduino_port, mqtt_status_topic
 
-ser = serial.Serial(arduino_port, baudrate=9600, timeout=1)
+
+# ser = serial.Serial(arduino_port, baudrate=9600, timeout=1)
 
 
 def on_connect(client, userdata, flags, rc):
@@ -16,7 +18,9 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     message = msg.payload.decode()
     print(f"Received message: {message}")
-    ser.write(message.encode())
+    # ser.write(message.encode())
+    resp = serial_generator.send_command(message.encode(), serial_generator.response_map[message.encode()])
+    client.publish(mqtt_status_topic, resp)
 
 
 client = mqtt.Client()
@@ -24,10 +28,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect(mqtt_broker_host, mqtt_broker_port, 60)
-client.loop_start()
 
 while True:
-    line = ser.readline()
-    if line:
-        client.publish(mqtt_status_topic, str(line))
+    client.loop_start()
     time.sleep(1)

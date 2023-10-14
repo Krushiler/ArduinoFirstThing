@@ -20,9 +20,9 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect(mqtt_broker_host, mqtt_broker_port, 60)
-client.loop_start()
 
 while True:
+    client.loop_start()
     message = input("Введите сообщение для отправки: ")
     client.publish(mqtt_topic, message)
     print(f"Отправлено сообщение: {message}")
