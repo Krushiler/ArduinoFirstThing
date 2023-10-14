@@ -19,8 +19,9 @@ def on_message(client, userdata, msg):
     message = msg.payload.decode()
     print(f"Received message: {message}")
     # ser.write(message.encode())
-    resp = serial_generator.send_command(message.encode(), serial_generator.response_map[message.encode()])
-    client.publish(mqtt_status_topic, resp)
+    if message in serial_generator.response_map.keys():
+        resp = serial_generator.send_command(message)
+        client.publish(mqtt_status_topic, resp.encode())
 
 
 client = mqtt.Client()
