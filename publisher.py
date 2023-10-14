@@ -7,7 +7,6 @@ from constants import mqtt_broker_host, mqtt_topic, mqtt_broker_port, mqtt_statu
 
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with result code {rc}")
-    client.subscribe(mqtt_topic)
     client.subscribe(mqtt_status_topic)
 
 
@@ -21,6 +20,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect(mqtt_broker_host, mqtt_broker_port, 60)
+client.loop_start()
 
 while True:
     message = input("Введите сообщение для отправки: ")
